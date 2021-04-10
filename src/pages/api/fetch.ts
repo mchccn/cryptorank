@@ -9,6 +9,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
         date.setDate(date.getDate() - 1);
 
+        if (req.query.date) {
+            const query = new Date(req.query.date as string);
+
+            if (query.getTime() <= date.getTime()) {
+                date.setDate(query.getDate() - 1);
+            }
+        }
+
         const json: {
             status: {};
             data: { id: number; name: string; symbol: string; cmc_rank: number; last_updated: string }[];
@@ -20,8 +28,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
             )
         ).json();
 
+        if (!json.data) return res.status(400).end();
+
         await Promise.all(
-            json.data.map(async ({ id, name, symbol, cmc_rank, last_updated }) => {
+            json.data.map(async ({ id, name, symbol, cmc_rank }) => {
                 const currency = await currencies.findOne({
                     _id: id,
                 });
@@ -31,13 +41,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                         _id: id,
                         name,
                         ticker: symbol,
-                        rankings: [{ date: last_updated, ranking: cmc_rank }],
+                        rankings: [{ date: date.toISOString(), ranking: cmc_rank }],
                     });
                 }
 
-                if (currency.rankings.find(({ date }) => date === last_updated)) return;
+                if (currency.rankings.find((r) => r.date.split("T")[0] === date.toISOString().split("T")[0])) return;
 
-                currency.rankings.push({ date: last_updated, ranking: cmc_rank });
+                currency.rankings.push({ date: date.toISOString(), ranking: cmc_rank });
 
                 currency.markModified("rankings");
 

@@ -8,6 +8,8 @@ export default function Index() {
     const [all, setAll] = useState<IPureCurrency[]>([]);
     const [data, setData] = useState<IPureCurrency[]>([]);
     const [colored, setColored] = useState<(IPureCurrency & { color: string })[]>([]);
+    const [allColored, setAllColored] = useState<(IPureCurrency & { color: string })[]>([]);
+    const [more, setMore] = useState(false);
     const [filter, setFilter] = useState("");
 
     useEffect(() => {
@@ -22,12 +24,30 @@ export default function Index() {
     useEffect(() => {
         if (!filter) return setData(all);
 
-        return setData(data.filter(({ name }) => name === filter));
+        return setData(all.filter(({ name }) => name === filter));
     }, [filter]);
 
     useEffect(() => {
-        setColored(data.map((currency) => ({ ...currency, color: Math.floor(Math.random() * 16777215).toString(16) })));
+        setColored(
+            data.map((currency) => ({
+                ...currency,
+                color: Math.floor(Math.random() * 16777215)
+                    .toString(16)
+                    .padStart(6, "0"),
+            }))
+        );
     }, [data]);
+
+    useEffect(() => {
+        setAllColored(
+            all.map((currency) => ({
+                ...currency,
+                color: Math.floor(Math.random() * 16777215)
+                    .toString(16)
+                    .padStart(6, "0"),
+            }))
+        );
+    }, [all]);
 
     return (
         <>
@@ -49,13 +69,20 @@ export default function Index() {
                                 ))}
                             </select>
                         </div>
-                        <div className="grid grid-cols-10">
-                            {colored.map(({ name, color }) => (
-                                <div>
-                                    <p>{name}</p>
-                                    <div className="h-4 w-4" style={{ backgroundColor: `#${color}` }}></div>
-                                </div>
-                            ))}
+                        <div className="grid grid-cols-5 gap-x-4">
+                            {allColored
+                                .map(({ name, color }) => (
+                                    <div className="flex items-center justify-between" key={color}>
+                                        <p className="text-xs text-gray-700 overflow-hidden overflow-ellipsis whitespace-pre">{name}</p>
+                                        <div className="h-4 w-4" style={{ backgroundColor: `#${color}` }}></div>
+                                    </div>
+                                ))
+                                .slice(0, more ? allColored.length : 10)}
+                        </div>
+                        <div className="mb-4">
+                            <a className="text-xs text-gray-400 cursor-pointer" onClick={() => setMore(!more)}>
+                                {more ? "Show less" : "Show more"}...
+                            </a>
                         </div>
                     </div>
                     <Chart data={colored} />

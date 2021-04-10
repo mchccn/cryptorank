@@ -4,7 +4,7 @@ import currencies from "../../lib/currency";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     try {
-        const data = await currencies.find();
+        const data = (await currencies.find()).slice(0, 100);
 
         return res.json(data);
     } catch (e) {
