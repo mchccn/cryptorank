@@ -1,20 +1,17 @@
-import { useEffect, useRef, useState } from "react";
-import { ICurrency } from "../lib/currency";
+import { useEffect, useRef } from "react";
+import { IPureCurrency } from "../lib/currency";
 
-export default function Chart({ data }: { data: ICurrency[] }) {
+export default function Chart({ data }: { data: (IPureCurrency & { color: string })[] }) {
     const canvas = useRef<HTMLCanvasElement | null>(null);
 
-    const [ctx, setCtx] = useState<CanvasRenderingContext2D | undefined>(undefined);
-
     useEffect(() => {
-        if (canvas.current) setCtx(canvas.current.getContext("2d"));
+        canvas.current.width = 1200;
+        canvas.current.height = 600;
+
+        const ctx = canvas.current.getContext("2d");
+
+        data.forEach(({ name, rankings, color }) => {});
     }, []);
 
-    useEffect(() => {
-        if (ctx) {
-            console.log(data);
-        }
-    }, [ctx]);
-
-    return <canvas className="border border-gray-00 shadow-sm rounded-sm" style={{ width: 800, height: 400 }}></canvas>;
+    return <canvas ref={canvas} className="border border-gray-00 shadow-sm rounded-sm" style={{ width: 800, height: 400 }}></canvas>;
 }

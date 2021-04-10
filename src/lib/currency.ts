@@ -1,5 +1,12 @@
 import { Document, model, Model, models, Schema } from "mongoose";
 
+export interface IPureCurrency {
+    _id: ICurrency["_id"];
+    name: ICurrency["name"];
+    ticker: ICurrency["ticker"];
+    rankings: ICurrency["rankings"];
+}
+
 export interface ICurrency extends Document {
     _id: number;
     name: string;
