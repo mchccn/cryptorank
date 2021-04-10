@@ -5,11 +5,19 @@ import currencies from "../../lib/currency";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     try {
+        const date = new Date();
+
+        date.setDate(date.getDate() - 1);
+
         const json: {
             status: {};
             data: { id: number; name: string; symbol: string; cmc_rank: number; last_updated: string }[];
         } = await (
-            await fetch("https://web-api.coinmarketcap.com/v1/cryptocurrency/listings/historical?convert=USD,BTC&date=2021-04-01&limit=100&start=1")
+            await fetch(
+                `https://web-api.coinmarketcap.com/v1/cryptocurrency/listings/historical?convert=USD,BTC&date=${
+                    date.toISOString().split("T")[0]
+                }&limit=100&start=1`
+            )
         ).json();
 
         await Promise.all(

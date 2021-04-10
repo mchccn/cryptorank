@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html {
+    overflow-x: hidden;
+
+    overscroll-behavior: none;
+
+    scroll-behavior: smooth;
+}

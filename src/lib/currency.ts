@@ -1,13 +1,13 @@
 import { Document, model, Model, models, Schema } from "mongoose";
 
-interface ICurrency extends Document {
+export interface ICurrency extends Document {
     _id: number;
     name: string;
     ticker: string;
     rankings: { date: string; ranking: number }[];
 }
 
-const currency = new Schema({
+export const currency = new Schema({
     _id: {
         type: Number,
         required: true,
